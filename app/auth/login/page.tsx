@@ -8,6 +8,7 @@ import { login } from "@/routes/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
+import { useAuthContext } from "@/components/AuthProvider/AuthProvider";
 
 const loginSchema = z.object({
   email: z.string().email("E-mail inválido"),
@@ -21,6 +22,7 @@ export type LoginSchemaType = {
 
 export default function Page() {
   const router = useRouter();
+  const { login: loginAuth } = useAuthContext();
 
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
@@ -33,13 +35,14 @@ export default function Page() {
 
   const onSubmit = async (values: LoginSchemaType) => {
     try {
-      const data = await login(values);
-      console.log(data);
+      const response = await login(values);
+      console.log(response);
 
-      if (data.status === 200) {
+      if (response.status === 200) {
         toast.success("Login realizado com sucesso");
         form.reset();
-        router.push("/dashboard");
+        loginAuth(response.data.access_token);
+        router.push("/admin/home");
       }
     } catch (error: unknown) {
       console.log((error as AxiosError).status);
