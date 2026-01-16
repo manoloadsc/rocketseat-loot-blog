@@ -11,7 +11,7 @@ import { useEffect } from "react";
 
 // import data from "./data.json";
 
-export default function Page() {
+export default function Page({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthContext();
 
   useEffect(() => {
@@ -40,6 +40,7 @@ export default function Page() {
                 <ChartAreaInteractive />
               </div>
               <DataTable data={data} /> */}
+              {children}
             </div>
           </div>
         </div>
