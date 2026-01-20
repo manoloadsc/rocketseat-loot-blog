@@ -27,6 +27,7 @@ import { toast } from "sonner";
 type ModalCreatePostProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  getPosts: () => void;
 };
 
 export type ModalCreatePostFormValues = {
@@ -47,6 +48,7 @@ const modalCreatePostSchema = z.object({
 export default function ModalCreatePost({
   open,
   onOpenChange,
+  getPosts,
 }: ModalCreatePostProps) {
   const [categories, setCategories] = useState<CategoryType[]>([]);
 
@@ -78,6 +80,7 @@ export default function ModalCreatePost({
         toast.success("Post criado com sucesso");
         form.reset();
         onOpenChange(false);
+        getPosts();
       }
     } catch (error) {
       console.log(error);

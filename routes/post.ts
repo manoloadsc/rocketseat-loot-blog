@@ -19,3 +19,15 @@ export const createPost = async (values: ModalCreatePostFormValues) => {
     throw e;
   }
 };
+
+export const getPosts = async () => {
+  try {
+    const response = await apiPrivate.get("/posts");
+
+    return response;
+  } catch (error) {
+    console.log(error);
+    const e = error as AxiosError;
+    throw e;
+  }
+};

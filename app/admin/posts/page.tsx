@@ -7,12 +7,16 @@ import { api } from "@/lib/axios";
 import { useAuthContext } from "@/components/AuthProvider/AuthProvider";
 import ModalCreatePost from "@/components/ModalCreatePost/ModalCreatePost";
 import { Button } from "@/components/ui/button";
+import { getPosts } from "@/routes/post";
 
 type Post = {
   id: string | number;
   title: string;
-  excerpt?: string;
-  coverUrl?: string;
+  content: string;
+  category: {
+    name: string;
+    id: string;
+  };
   createdAt?: string;
 };
 
@@ -22,10 +26,32 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [postsData, setPostsData] = useState<Post[]>([]);
+
+  async function getPostsData() {
+    try {
+      const response = await getPosts();
+      setPostsData(response.data);
+      setLoading(false);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    (async () => {
+      await getPostsData();
+    })();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white text-black">
-      <ModalCreatePost open={showModal} onOpenChange={setShowModal} />
+      <ModalCreatePost
+        getPosts={getPostsData}
+        open={showModal}
+        onOpenChange={setShowModal}
+      />
       <header className="border-b border-neutral-200">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-6">
           <h1 className="text-xl font-semibold tracking-tight">Blog Loot</h1>
@@ -60,36 +86,29 @@ export default function Page() {
           <div className="rounded-md border border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-600">
             {error}
           </div>
-        ) : posts.length === 0 ? (
+        ) : postsData.length === 0 ? (
           <div className="rounded-md border border-neutral-200 bg-neutral-50 p-8 text-center text-sm text-neutral-600">
             Nenhum post publicado ainda.
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
+            {postsData.map((post) => (
               <article
                 key={post.id}
                 className="overflow-hidden rounded-xl border border-neutral-200 transition-colors hover:border-neutral-300"
               >
-                {post.coverUrl ? (
-                  <div className="relative h-40 w-full bg-neutral-100">
-                    <Image
-                      src={post.coverUrl}
-                      alt=""
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="h-40 w-full bg-neutral-100" />
-                )}
                 <div className="p-4">
-                  <h2 className="line-clamp-2 text-base font-semibold">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex text-foreground items-center rounded-full bg-neutral-100 px-2 py-1 text-xs font-mediu">
+                      {post.category?.name || "Sem categoria"}
+                    </span>
+                  </div>
+                  <h2 className="mt-2 line-clamp-2 text-base font-semibold">
                     {post.title}
                   </h2>
-                  {post.excerpt ? (
+                  {post.content ? (
                     <p className="mt-2 line-clamp-3 text-sm text-neutral-600">
-                      {post.excerpt}
+                      {post.content}
                     </p>
                   ) : null}
                   {post.createdAt ? (
