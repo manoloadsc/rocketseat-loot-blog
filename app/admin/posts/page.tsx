@@ -8,9 +8,10 @@ import { useAuthContext } from "@/components/AuthProvider/AuthProvider";
 import ModalCreatePost from "@/components/ModalCreatePost/ModalCreatePost";
 import { Button } from "@/components/ui/button";
 import { getPosts } from "@/routes/post";
+import ModalEditPost from "@/components/ModalEditPost/ModalEditPost";
 
 type Post = {
-  id: string | number;
+  id: string;
   title: string;
   content: string;
   category: {
@@ -26,7 +27,9 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [postsData, setPostsData] = useState<Post[]>([]);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
 
   async function getPostsData() {
     try {
@@ -51,6 +54,12 @@ export default function Page() {
         getPosts={getPostsData}
         open={showModal}
         onOpenChange={setShowModal}
+      />
+      <ModalEditPost
+        getPosts={getPostsData}
+        open={showEditModal}
+        onOpenChange={setShowEditModal}
+        postId={selectedPostId}
       />
       <header className="border-b border-neutral-200">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-6">
@@ -98,10 +107,21 @@ export default function Page() {
                 className="overflow-hidden rounded-xl border border-neutral-200 transition-colors hover:border-neutral-300"
               >
                 <div className="p-4">
-                  <div className="flex items-center gap-2">
+                  <div className="flex justify-between items-center gap-2">
                     <span className="inline-flex text-foreground items-center rounded-full bg-neutral-100 px-2 py-1 text-xs font-mediu">
                       {post.category?.name || "Sem categoria"}
                     </span>
+                    <div>
+                      <Button
+                        className="cursor-pointer"
+                        onClick={() => {
+                          setShowEditModal(true);
+                          setSelectedPostId(post.id);
+                        }}
+                      >
+                        Editar
+                      </Button>
+                    </div>
                   </div>
                   <h2 className="mt-2 line-clamp-2 text-base font-semibold">
                     {post.title}

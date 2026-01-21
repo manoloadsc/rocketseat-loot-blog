@@ -1,6 +1,7 @@
 import { apiPrivate } from "../lib/axios";
 import { AxiosError } from "axios";
 import { ModalCreatePostFormValues } from "../components/ModalCreatePost/ModalCreatePost";
+import { ModalEditPostFormValues } from "../components/ModalEditPost/ModalEditPost";
 
 export const createPost = async (values: ModalCreatePostFormValues) => {
   try {
@@ -27,6 +28,31 @@ export const getPosts = async () => {
     return response;
   } catch (error) {
     console.log(error);
+    const e = error as AxiosError;
+    throw e;
+  }
+};
+
+export const getOnePost = async (id: string) => {
+  try {
+    const response = await apiPrivate.get(`/posts/${id}`);
+    return response;
+  } catch (error) {
+    const e = error as AxiosError;
+    throw e;
+  }
+};
+
+export const editPost = async (id: string, values: ModalEditPostFormValues) => {
+  try {
+    const response = await apiPrivate.patch(`/posts/${id}`, {
+      title: values.title,
+      content: values.content,
+      categoryId: values.category,
+    });
+
+    return response;
+  } catch (error) {
     const e = error as AxiosError;
     throw e;
   }
