@@ -57,3 +57,13 @@ export const editPost = async (id: string, values: ModalEditPostFormValues) => {
     throw e;
   }
 };
+
+export const deletePost = async (id: string) => {
+  try {
+    const response = await apiPrivate.delete(`/posts/${id}`);
+    return response;
+  } catch (error) {
+    const e = error as AxiosError;
+    throw e;
+  }
+};

@@ -9,6 +9,8 @@ import ModalCreatePost from "@/components/ModalCreatePost/ModalCreatePost";
 import { Button } from "@/components/ui/button";
 import { getPosts } from "@/routes/post";
 import ModalEditPost from "@/components/ModalEditPost/ModalEditPost";
+import { Trash2 } from "lucide-react";
+import ModalDeletePost from "@/components/ModalDeletePost/ModalDeletePost";
 
 type Post = {
   id: string;
@@ -30,6 +32,7 @@ export default function Page() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [postsData, setPostsData] = useState<Post[]>([]);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   async function getPostsData() {
     try {
@@ -60,6 +63,12 @@ export default function Page() {
         open={showEditModal}
         onOpenChange={setShowEditModal}
         postId={selectedPostId}
+      />
+      <ModalDeletePost
+        open={showDeleteModal}
+        onOpenChange={setShowDeleteModal}
+        postId={selectedPostId}
+        getPosts={getPostsData}
       />
       <header className="border-b border-neutral-200">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-6">
@@ -111,7 +120,7 @@ export default function Page() {
                     <span className="inline-flex text-foreground items-center rounded-full bg-neutral-100 px-2 py-1 text-xs font-mediu">
                       {post.category?.name || "Sem categoria"}
                     </span>
-                    <div>
+                    <div className="flex gap-1">
                       <Button
                         className="cursor-pointer"
                         onClick={() => {
@@ -120,6 +129,15 @@ export default function Page() {
                         }}
                       >
                         Editar
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setShowDeleteModal(true);
+                          setSelectedPostId(post.id);
+                        }}
+                        className="cursor-pointer bg-red-500 hover:bg-red-600 border border-red-700 text-white"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
